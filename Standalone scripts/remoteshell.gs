@@ -23,7 +23,6 @@ if params.len > 0 then
 	ipAddress = params[0]
 else
 	exit(white + "usage: atk <b>[ip] [port(opt)] [passwd(opt)]\n" + white)
-
 end if
 
 if params.len > 1 then
@@ -39,14 +38,6 @@ else
 end if
 
 // ############################################################### SETUP ###############################################################
-metaLib = null
-libName = null
-libVer = null
-net_session = null
-file = null
-changePass = null
-thisComp = get_shell.host_computer
-memory = null
 
 if not attackPort then
 	print("\n" + gray + "attacking: " + ipAddress + ":...")
@@ -90,7 +81,6 @@ if metaLib then
 	end if
 
 	print(line1)
-
 	// ############################################################### EXPLOIT ###############################################################
 
 	for mem in memory
@@ -103,7 +93,6 @@ if metaLib then
 			end if
 
 			value = add[add.indexOf("<b>") + 3 : add.indexOf("</b>")]
-
 			print(gray + "exploiting: " + value + "\n")
 
 			if passwd then
@@ -113,15 +102,19 @@ if metaLib then
 			end if
 
 			if result then
-				print(gray +  "found: " + result + "\n")
+				print(gray + "found: " + result + "\n")
 
 				if typeof(result) == "shell" then
 					resultList.push(result)
 				end if
 
+				if typeof(result) == "file" then
+					resultList.push(result)
+				end if
 			else
 				print(gray + "no results\n")
 			end if
+
 		end for
 
 	end for
@@ -131,11 +124,17 @@ if metaLib then
 	if resultList.len > 0 then
 		print(line1)
 		print(gray + "results:")
-		info = "INDEX TYPE PRIVILEGES"
+		info = "INDEX TYPE PRIVILEGES PATH"
 		i = 1
 
 		for result in resultList
-			info = info + "\n" + i + " " + result + " " + "WIP"
+			if typeof(result) == "shell" then
+				info = info + "\n" + i + " " + result + " " + "WIP"
+			end if
+
+			if typeof(result) == "file" then
+				info = info + "\n" + i + " " + result + " " + "WIP" + " " + result.path
+			end if
 			i = i + 1
 		end for
 
@@ -145,7 +144,21 @@ if metaLib then
 
 		if selectedResult.to_int then
 			selectedResult = resultList[selectedResult.to_int - 1]
-			selectedResult.start_terminal
+
+			if typeof(selectedResult) == "shell" then
+				print(gray + "executing shell...")
+				selectedResult.start_terminal
+			end if
+
+			if typeof(selectedResult) == "file" then
+				if selectedResult.is_folder then
+					files = selectedResult.get_files
+					for file in files
+						print(file.get_content)
+					end for
+				end if
+
+			end if
 		else
 			exit("Exiting...")
 		end if
