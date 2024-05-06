@@ -1,8 +1,10 @@
 line = "--------------------"
 line1 = "########################################################################"
 version = "1.0"
-// ############################################################### IMPORTS ###############################################################
 
+print("Welcome to Calcium's Wifi Cracker v" + version)
+
+// ############################################################### IMPORTS ###############################################################
 crypto = include_lib("/lib/crypto.so")
 // Load up crypto with library
 
@@ -17,7 +19,6 @@ if not crypto then
 end if
 
 // ############################################################### MAIN ###############################################################
-
 // Declare our own computer and the interface
 hostPC = get_shell.host_computer
 interface = "wlan0"
@@ -43,7 +44,6 @@ for unsortedNetwork in unsortedNetworks
 end for
 
 sortedNetworks = sortedNetworks.sort("pwr", 0)
-
 sortedNetworks = slice(sortedNetworks, 0, 10)
 
 PrintAndSelectNetwork = function()
